@@ -30,7 +30,7 @@ async function run() {
     await client.connect();
     const db =  client.db("studyMateDB");
     const partnersCollection = db.collection("partners");
-
+    const partnersRequestCollection = db.collection("partners-request")
 
 
     app.get("/partners", async(req, res) => {
@@ -42,6 +42,12 @@ async function run() {
       const cursor = partnersCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    })
+
+    app.get("/topPartners", async(req, res) => {
+      const cursor = partnersCollection.find().sort({rating: -1}).limit(6);
+      const result = await cursor.toArray();
+      res.send(result)
     }) 
 
     app.get('/partners/:id', async(req, res) => {
@@ -50,8 +56,6 @@ async function run() {
       const result = await partnersCollection.findOne(query)
       res.send(result)
     })
-
-
 
     app.post('/partners', async(req, res) => {
       const partner = req.body;
@@ -77,7 +81,15 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/partners-request', async(req, res) => {
+      const email = req.params.email;
+      // const query = {  }
+      const cursor = partnersRequestCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
+    
 
     //----------------------------------------------------------------------------    
 
