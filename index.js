@@ -89,9 +89,21 @@ async function run() {
       res.send(result);
     })
 
-    
+    app.post("/partners-request", async(req, res) => {
+      const request = req.body;
+      const email = req.body.senderEmail;
+      const query = { senderEmail: email }
+      const existingEmail = await partnersRequestCollection.findOne(query);
+      if (existingEmail) {
+        res.send('Sender already send')
+      } else {
+        const result = await partnersRequestCollection.insertOne(request);
+        res.send(result)
+      }
 
-    //----------------------------------------------------------------------------    
+    })
+
+      
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
