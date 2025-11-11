@@ -42,11 +42,44 @@ async function run() {
       const cursor = partnersCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    }) 
+
+    app.get('/partners/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)}
+      const result = await partnersCollection.findOne(query)
+      res.send(result)
     })
 
-    
 
 
+    app.post('/partners', async(req, res) => {
+      const partner = req.body;
+      const result = await partnersCollection.insertOne(partner)
+      res.send(result)
+    })
+
+    app.patch("/partners/:id", async(req, res) => {
+      const id = req.params.id;
+      const partner = req.body;
+      const query = { _id: new ObjectId(id)};
+      const update = {
+        $set: partner
+      }
+      const result = await partnersCollection.updateOne(query, update)
+      res.send(result)
+    })
+
+    app.delete('/partners/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await partnersCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+
+    //----------------------------------------------------------------------------    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
