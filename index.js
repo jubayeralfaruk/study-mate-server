@@ -31,6 +31,7 @@ async function run() {
     const db =  client.db("studyMateDB");
     const partnersCollection = db.collection("partners");
     const partnersRequestCollection = db.collection("partners-request")
+    const usersCollection = db.collection("users")
 
 
     app.get("/partners", async(req, res) => {
@@ -74,6 +75,14 @@ async function run() {
       res.send(result)
     })
 
+    app.patch("/partners/:id/increase", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const result = await partnersCollection.updateOne(query, {
+        $inc: {patnerCount: 1}
+      })
+    })
 
     app.delete('/partners/:id', async(req, res) => {
       const id = req.params.id;
@@ -92,10 +101,17 @@ async function run() {
 
     app.post("/partners-request", async(req, res) => {
       const request = req.body;
+
       const email = req.body.senderEmail;
-      const query = { senderEmail: email }
-      const existingEmail = await partnersRequestCollection.findOne(query);
-      if (existingEmail) {
+      const id = req.body.partnerId;
+
+      const queryID = { partnerId: id };
+      const queryEmail = { senderEmail: email };
+
+      const existingId = await partnersRequestCollection.findOne(queryID);
+      const existingEmail = await partnersRequestCollection.findOne(queryEmail);
+
+      if (existingEmail && existingId) {
         res.send('Sender already send')
       } else {
         const result = await partnersRequestCollection.insertOne(request);
@@ -103,7 +119,42 @@ async function run() {
       }
 
     })
-  
+
+    app.patch("/partners-request/:id", async(req, res) => {
+      const id = req.params.id;
+      const request = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: request
+      }
+      const result = await partnersRequestCollection.updateOne(query, update);
+      res.send(result)
+    })
+
+    app.delete("/partners-request/:id", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await partnersRequestCollection.deleteOne(query);
+      res.send(result)
+    })
+
+    //---------------------------------------------------------------------------
+    
+    app.get('/users', async() => {
+      const email = req.query.email;
+      const query = {};
+      if (email) {
+        query.email = email;
+      }
+      const cursor = usersCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    
+
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
