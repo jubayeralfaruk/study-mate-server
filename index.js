@@ -74,6 +74,7 @@ async function run() {
       res.send(result)
     })
 
+
     app.delete('/partners/:id', async(req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -102,8 +103,7 @@ async function run() {
       }
 
     })
-
-      
+  
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
