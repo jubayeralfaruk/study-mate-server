@@ -74,50 +74,48 @@ async function run() {
       res.send(result);
     });
 
-    // app.patch("/partners/:id/increase", async(req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: new ObjectId(id) };
+    app.patch("/partners/:id/increase", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
 
-    //   const result = await partnersCollection.updateOne(
-    //     query,
-    //     { $inc: { patnerCount: 1 }},
-    //     { returnDocument: "after" }
-    //   )
-    //   res.send(result)
-    // })
+      const result = await partnersCollection.updateOne(
+        query,
+        { $inc: { partnerCount: 1 }},
+        { returnDocument: "after" }
+      )
+      res.send(result)
+    })
+    //   try {
+    //     const id = req.params.id;
+    //     const query = { _id: new ObjectId(id) };
 
-    app.patch("/partners/:id/increase", async (req, res) => {
-      try {
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
+    //     const updated = await partnersCollection.findOneAndUpdate(
+    //       query,
+    //       { $inc: { partnerCount: 1 } },
+    //       { returnDocument: "after" }
+    //     );
 
-        const updated = await partnersCollection.findOneAndUpdate(
-          query,
-          { $inc: { partnerCount: 1 } },
-          { returnDocument: "after" }
-        );
+    //     if (!updated.value) {
+    //       return res.status(404).json({
+    //         success: false,
+    //         message: "Partner not found",
+    //       });
+    //     }
 
-        if (!updated.value) {
-          return res.status(404).json({
-            success: false,
-            message: "Partner not found",
-          });
-        }
+    //     res.json({
+    //       success: true,
+    //       message: "Partner count increased!",
+    //       partners: updated.value,
+    //     });
 
-        res.json({
-          success: true,
-          message: "Partner count increased!",
-          partners: updated.value,
-        });
-
-        res.send(result)
-      } catch (error) {
-        res.status(500).json({
-          success: false,
-          error: error.message,
-        });
-      }
-    });
+    //     res.send(result)
+    //   } catch (error) {
+    //     res.status(500).json({
+    //       success: false,
+    //       error: error.message,
+    //     });
+    //   }
+    // });
 
     app.delete("/partners/:id", async (req, res) => {
       const id = req.params.id;
@@ -202,7 +200,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
