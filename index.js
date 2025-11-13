@@ -21,13 +21,13 @@ const client = new MongoClient(uri, {
 });
 
 app.get("/", (req, res) => {
-  res.send("Server is runing now");
+  res.send("Study Mate server is runing now");
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const db = client.db("studyMateDB");
     const partnersCollection = db.collection("partners");
     const partnersRequestCollection = db.collection("partners-request");
@@ -35,9 +35,17 @@ async function run() {
 
     app.get("/partners", async (req, res) => {
       const email = req.query.email;
+      const level = req.query.level;
+      const subject = req.query.subject;
       const query = {};
       if (email) {
         query.email = email;
+      }
+      if (level) {
+        query.experienceLevel = level
+      }
+      if (subject) {
+        query.subject = { $regex: subject, $options: "i" }
       }
       const cursor = partnersCollection.find(query);
       const result = await cursor.toArray();
@@ -95,9 +103,13 @@ async function run() {
 
     app.get("/partners-request", async (req, res) => {
       const partnerId = req.query.partnerId;
+      const senderEmail = req.query.senderEmail;
       const query = {};
       if (partnerId) {
         query.partnerId = partnerId;
+      }
+      if (senderEmail) {
+        query.senderEmail = senderEmail;
       }
       const cursor = partnersRequestCollection.find(query);
       const result = await cursor.toArray();
@@ -144,29 +156,29 @@ async function run() {
 
     //---------------------------------------------------------------------------
 
-    app.get("/users", async () => {
-      const email = req.query.email;
-      const query = {};
-      if (email) {
-        query.email = email;
-      }
-      const cursor = usersCollection.find(query);
-      const result = await cursor.toArray();
-      res.send(result);
-    });
+    // app.get("/users", async (req, res) => {
+    //   const email = req.query.email;
+    //   const query = {};
+    //   if (email) {
+    //     query.email = email;
+    //   }
+    //   const cursor = usersCollection.find(query);
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
 
-    app.post("/users", async (req, res) => {
-      const user = req.body;
-      const email = req.body.email;
-      const existingEmail = usersCollection.findOne({ email: email });
+    // app.post("/users", async (req, res) => {
+    //   const user = req.body;
+    //   const email = req.body.email;
+    //   const existingEmail = usersCollection.findOne({ email: email });
 
-      if (existingEmail) {
-        res.send("User already existing.");
-      } else {
-        const result = await usersCollection.insertOne(user);
-        res.send(result);
-      }
-    });
+    //   if (existingEmail) {
+    //     res.send("User already existing.");
+    //   } else {
+    //     const result = await usersCollection.insertOne(user);
+    //     res.send(result);
+    //   }
+    // });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
@@ -174,7 +186,6 @@ async function run() {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
-    // Ensures that the client will close when you finish/error
     // await client.close();
   }
 }
