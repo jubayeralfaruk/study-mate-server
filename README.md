@@ -1,9 +1,9 @@
 # StudyMate — Server Side (Backend)
 
-## 🌐 Server API
+Live Project: https://smart-deals-ef2e6.web.app/
 
 ### Base URL  
-Your_Production_API_URL
+https://studt-mate-api.vercel.app/
 
 ## 🛠 Technologies Used
 - Node.js  
